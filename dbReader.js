@@ -16,15 +16,37 @@ const db = mysql.createConnection(
 function dbReader(data) {
     let option = data.database;
     if (option === 'View All Departments') {
-        db.query('SELECT * FROM departments', function (err, results) {
-            console.log(results);
-            index.runDatabase();
-          });
-    } else {
-        console.log('input: ', option)
-        console.log('nope');
-        return;
+       viewAllDepts();
+    } else if (option === 'View All Roles') {
+        viewAllRoles();
+    } else if (option === 'View All Employees') {
+        viewAllEmployees();
     }
 }
+
+function viewAllDepts() {
+    db.query('SELECT * FROM departments', function (err, results) {
+        console.log(results);
+        index.runDatabase();
+    })
+}
+
+function viewAllRoles() {
+    db.query('SELECT * FROM roles', function (err, results) {
+        console.log(results);
+        index.runDatabase();
+    })
+}
+
+function viewAllEmployees() {
+    db.query('SELECT * FROM employees', function (err, results) {
+        console.log(results);
+        index.runDatabase();
+    })
+}
+
+// console.log('input: ', option)
+//         console.log('nope');
+//         return;
 
 module.exports = dbReader;
