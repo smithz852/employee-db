@@ -1,7 +1,5 @@
 const mysql = require('mysql2');
-const index = require('./index');
-const inquirer = require("inquirer");
-const fs = require('fs');
+const index = require('./index')
 
 const db = mysql.createConnection(
     {
@@ -20,7 +18,7 @@ function dbReader(data) {
     if (option === 'View All Departments') {
         db.query('SELECT * FROM departments', function (err, results) {
             console.log(results);
-            runDatabase();
+            index.runDatabase();
           });
     } else {
         console.log('input: ', option)
@@ -29,29 +27,4 @@ function dbReader(data) {
     }
 }
 
-const runDatabase = () => {
-    inquirer
-     .prompt([
-        {
-            type: 'list',
-            message: 'Please select an option:',
-            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role'],
-            name: 'database',
-            validate: function listValidation(input) {
-                if (input == '') {
-                    return false;
-                } else {
-                    return true;
-                }
-            },
-        },
-     ]).then((data) =>
-     fs.readFile('./dbReader.js', dbReader(data), (err, data) => {
-        if (err) throw err;
-        console.log(data);
-      }))
-    }
-    
-
-
-exports.runDatabase = runDatabase;
+module.exports = dbReader;
