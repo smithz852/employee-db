@@ -45,9 +45,9 @@ function viewAllEmployees() {
     })
 }
 
-function addDepartment() {
+// function addDepartment() {
     
-}
+// }
 
 // console.log('input: ', option)
 //         console.log('nope');
