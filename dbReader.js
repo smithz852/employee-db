@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const index = require('./index');
 const inquirer = require('inquirer');
+const { elementAt } = require('rxjs');
 
 const db = mysql.createConnection(
     {
@@ -76,9 +77,10 @@ function addDepartment() {
 }
 
 function createArray() {
-    db.query('SELECT id FROM departments;', function (err, results) {
-            deptArray.push(results);
-            JSON.stringify(deptArray);
+    db.query('SELECT department_name FROM departments;', function (err, results) {
+            // let array = results
+            // console.log(results)
+            results.forEach((element) => deptArray.push(Object.values(element)));
             addRole();
     }) 
 }
@@ -86,9 +88,6 @@ function createArray() {
 let deptArray = [];
 
 function addRole () {
-
-    console.log('array: ', deptArray)
-
 
     inquirer
          .prompt([
@@ -119,7 +118,7 @@ function addRole () {
             {
                 type: 'list',
                 message: 'Please choose a department:',
-                choices: deptArray,
+                choices: deptArray.flat(),
                 name: 'roleDept',
                 validate: function listValidation(input) {
                     if (input == '') {
