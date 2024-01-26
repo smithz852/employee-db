@@ -77,9 +77,7 @@ function addDepartment() {
 }
 
 function createArray() {
-    db.query('SELECT id FROM departments;', function (err, results) {
-            // let array = results
-            // console.log(results)
+    db.query('SELECT department_name FROM departments;', function (err, results) {
             results.forEach((element) => deptArray.push(Object.values(element)));
             addRole();
     }) 
@@ -132,11 +130,22 @@ function addRole () {
             let newRole = data.roleName;
             let salary = data.salary;
             let roleDept = data.roleDept;
-            console.log('Role Info: ', newRole, salary, roleDept)
-            db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);', [newRole, salary, roleDept], function (err, results) {
-                console.log(results);
-                index.runDatabase();
-            })
+            let generalArray = []
+            let idArray = []
+
+            db.query("SELECT id FROM departments WHERE department_name = ?;",roleDept , function (err, results) {
+                // console.log('Result', results);
+                results.forEach((element) => generalArray.push(Object.values(element)));
+                console.log('array', generalArray[0])
+                idArray.push(generalArray[0][0])
+                console.log('id', idArray);
+
+                console.log('Role Info: ', newRole, salary, idArray[0])
+                db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);', [newRole, salary, idArray[0]], function (err, results) {
+                    console.log(results);
+                    index.runDatabase();
+                })
+            });
          })     
 }
 
