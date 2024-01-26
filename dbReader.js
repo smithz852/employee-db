@@ -24,6 +24,8 @@ function dbReader(data) {
         viewAllEmployees();
     } else if (option === 'Add a Department') {
         addDepartment();
+    } else if (option === 'Add a Role') {
+        createArray();
     }
 }
 
@@ -71,6 +73,70 @@ function addDepartment() {
                 index.runDatabase();
             })
          });      
+}
+
+function createArray() {
+    db.query('SELECT id FROM departments;', function (err, results) {
+            deptArray.push(results);
+            JSON.stringify(deptArray);
+            addRole();
+    }) 
+}
+
+let deptArray = [];
+
+function addRole () {
+
+    console.log('array: ', deptArray)
+
+
+    inquirer
+         .prompt([
+            {
+                type: 'input',
+                message: 'What is the name of this role?',
+                name: 'roleName',
+                validate: function listValidation(input) {
+                    if (input == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+            },
+            {
+                type: 'input',
+                message: 'What is the salary for this role?',
+                name: 'salary',
+                validate: function listValidation(input) {
+                    if (input == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+            },
+            {
+                type: 'list',
+                message: 'Please choose a department:',
+                choices: deptArray,
+                name: 'roleDept',
+                validate: function listValidation(input) {
+                    if (input == '') {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+            },
+         ]).then((data) => {
+            let newDept = data.department;
+            console.log('new dept', newDept)
+            db.query('INSERT INTO departments (department_name) VALUES (?);', newDept, function (err, results) {
+                console.log(results);
+                index.runDatabase();
+            })
+         })     
 }
 
 // console.log('input: ', option)
