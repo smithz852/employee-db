@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 const index = require('./index');
 const inquirer = require('inquirer');
+const { elementAt } = require('rxjs');
 
 const db = mysql.createConnection(
     {
@@ -76,9 +77,8 @@ function addDepartment() {
 }
 
 function createArray() {
-    db.query('SELECT id FROM departments;', function (err, results) {
-            deptArray.push(results);
-            JSON.stringify(deptArray);
+    db.query('SELECT department_name FROM departments;', function (err, results) {
+            results.forEach((element) => deptArray.push(Object.values(element)));
             addRole();
     }) 
 }
@@ -86,9 +86,6 @@ function createArray() {
 let deptArray = [];
 
 function addRole () {
-
-    console.log('array: ', deptArray)
-
 
     inquirer
          .prompt([
@@ -119,7 +116,7 @@ function addRole () {
             {
                 type: 'list',
                 message: 'Please choose a department:',
-                choices: deptArray,
+                choices: deptArray.flat(),
                 name: 'roleDept',
                 validate: function listValidation(input) {
                     if (input == '') {
@@ -130,12 +127,25 @@ function addRole () {
                 },
             },
          ]).then((data) => {
-            let newDept = data.department;
-            console.log('new dept', newDept)
-            db.query('INSERT INTO departments (department_name) VALUES (?);', newDept, function (err, results) {
-                console.log(results);
-                index.runDatabase();
-            })
+            let newRole = data.roleName;
+            let salary = data.salary;
+            let roleDept = data.roleDept;
+            let generalArray = []
+            let idArray = []
+
+            db.query("SELECT id FROM departments WHERE department_name = ?;",roleDept , function (err, results) {
+                // console.log('Result', results);
+                results.forEach((element) => generalArray.push(Object.values(element)));
+                console.log('array', generalArray[0])
+                idArray.push(generalArray[0][0])
+                console.log('id', idArray);
+
+                console.log('Role Info: ', newRole, salary, idArray[0])
+                db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);', [newRole, salary, idArray[0]], function (err, results) {
+                    console.log(results);
+                    index.runDatabase();
+                })
+            });
          })     
 }
 
