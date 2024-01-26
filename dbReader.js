@@ -77,7 +77,7 @@ function addDepartment() {
 }
 
 function createArray() {
-    db.query('SELECT department_name FROM departments;', function (err, results) {
+    db.query('SELECT id FROM departments;', function (err, results) {
             // let array = results
             // console.log(results)
             results.forEach((element) => deptArray.push(Object.values(element)));
@@ -129,9 +129,11 @@ function addRole () {
                 },
             },
          ]).then((data) => {
-            let newDept = data.department;
-            console.log('new dept', newDept)
-            db.query('INSERT INTO departments (department_name) VALUES (?);', newDept, function (err, results) {
+            let newRole = data.roleName;
+            let salary = data.salary;
+            let roleDept = data.roleDept;
+            console.log('Role Info: ', newRole, salary, roleDept)
+            db.query('INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);', [newRole, salary, roleDept], function (err, results) {
                 console.log(results);
                 index.runDatabase();
             })
