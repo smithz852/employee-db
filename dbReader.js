@@ -3,6 +3,10 @@ const index = require('./index');
 const inquirer = require('inquirer');
 const { elementAt } = require('rxjs');
 
+let roleArray = [];
+let managerArray = ['None'];
+let deptArray = [];
+
 const db = mysql.createConnection(
     {
       host: 'localhost',
@@ -27,6 +31,9 @@ function dbReader(data) {
         addDepartment();
     } else if (option === 'Add a Role') {
         createArray();
+    } else if (option === 'Add an Employee') {
+        createEmployeeArray();
+        createManagerArray();
     }
 }
 
@@ -83,7 +90,23 @@ function createArray() {
     }) 
 }
 
-let deptArray = [];
+function createEmployeeArray() {
+    db.query('SELECT title FROM roles;', function (err, results) {
+            results.forEach((element) => roleArray.push(Object.values(element)));
+           
+    }) 
+}
+
+function createManagerArray() {
+    db.query('SELECT manager_name FROM managers;', function (err, results) {
+        console.log(results);
+            results.forEach((element) => managerArray.push(Object.values(element)));
+            console.log(managerArray);
+            addEmployee();
+    }) 
+}
+
+
 
 function addRole () {
 
@@ -149,8 +172,99 @@ function addRole () {
          })     
 }
 
-// console.log('input: ', option)
-//         console.log('nope');
-//         return;
+
+
+function addEmployee() {
+
+    inquirer
+    .prompt([
+       {
+           type: 'input',
+           message: "What is the employees' first name?",
+           name: 'firstName',
+           validate: function listValidation(input) {
+               if (input == '') {
+                   return false;
+               } else {
+                   return true;
+               }
+           },
+       },
+       {
+           type: 'input',
+           message: "What is the employees' last name?",
+           name: 'lastName',
+           validate: function listValidation(input) {
+               if (input == '') {
+                   return false;
+               } else {
+                   return true;
+               }
+           },
+       },
+       {
+           type: 'list',
+           message: 'Please choose a role:',
+           choices: roleArray.flat(),
+           name: 'roles',
+           validate: function listValidation(input) {
+               if (input == '') {
+                   return false;
+               } else {
+                   return true;
+               }
+           },
+       },
+       {
+        type: 'list',
+        message: 'Who is the manager?',
+        choices: managerArray.flat(),
+        name: 'manager',
+        validate: function listValidation(input) {
+            if (input == '') {
+                return false;
+            } else {
+                return true;
+            }
+        },
+    },
+    ]).then((data) => {
+       let firstName = data.firstName;
+       let lastName = data.lastName;
+       let roles = data.roles;
+       let manager = data.manager;
+       let generalArray = []
+       let managerListArray = []
+       let rolesArray = []
+       let managersArray = []
+
+
+       console.log(manager)
+       db.query("SELECT id FROM managers WHERE manager_name = ?;", manager, function (err, results) {
+        console.log('Manager', results);
+        results.forEach((element) => managerListArray.push(Object.values(element)));
+        console.log('M array', managerListArray[0])
+        managersArray.push(managerListArray[0][0])
+        console.log('M id', managersArray[0]);
+        
+    });
+
+       db.query("SELECT id FROM roles WHERE title = ?;",roles , function (err, results) {
+           console.log('Roles', results);
+           results.forEach((element) => generalArray.push(Object.values(element)));
+           console.log('R array', generalArray[0])
+           rolesArray.push(generalArray[0][0])
+           console.log('R id', rolesArray);
+
+           console.log('confirmation: ', firstName, lastName, rolesArray[0], managersArray[0])
+           db.query('INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);', [firstName, lastName, rolesArray[0], managersArray[0]], function (err, results) {
+               console.log('final result', results);
+               index.runDatabase();
+        })
+       });
+    })     
+}
+
+
 
 module.exports = dbReader;

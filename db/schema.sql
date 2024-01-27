@@ -18,6 +18,7 @@ CREATE TABLE roles (
   ON DELETE SET NULL
 );
 
+ALTER TABLE roles AUTO_INCREMENT = 100;
 
 
 CREATE TABLE employees (
@@ -25,13 +26,23 @@ CREATE TABLE employees (
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT,
-  manager_id INT NOT NULL PRIMARY KEY,
+  manager_id INT AUTO_INCREMENT PRIMARY KEY,
   FOREIGN KEY (role_id)
   REFERENCES roles(id)
    ON DELETE SET NULL
 );
 
-ALTER TABLE roles AUTO_INCREMENT = 100;
+CREATE TABLE managers (
+  id INT,
+  manager_name VARCHAR(30) NOT NULL,
+  FOREIGN KEY (id)
+  REFERENCES employees(manager_id)
+);
+
+ALTER TABLE employees AUTO_INCREMENT = 500;
+
+
+
 
 
 
