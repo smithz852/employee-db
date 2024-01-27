@@ -10,6 +10,10 @@ VALUES ("Manager", 80000, 2),
        ("Tech", 85000, 4);
 
 INSERT INTO employees (id, first_name, last_name, role_id, manager_id)
-VALUES (001, "Zach", "Smith", 100, 501),
-       (002, "Jane", "Doe", 101, 505);
+VALUES (001, "Popeye ", "Flintstone", 100, 500),
+       (002, "Jane", "Doe", 101, 501);
+
+INSERT INTO managers (id, manager_name)
+VALUES (500, "Gojira McFly"),
+       (501, "Obelix Skywalker");
 
