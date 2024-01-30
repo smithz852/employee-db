@@ -12,7 +12,7 @@
 
 ## Description
 
-Video Tutorial:
+Video Tutorial: https://drive.google.com/file/d/1bRVnZk0z9BYHtjIdnDOKQ-xl1WFpO2IR/view
 
 GitHub Link: https://github.com/smithz852/employee-db.git
 
