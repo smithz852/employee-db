@@ -14,7 +14,7 @@
 
 Video Tutorial:
 
-GitHub Link:
+GitHub Link: https://github.com/smithz852/employee-db.git
 
 A simple console databse designed to track employee information.
 
