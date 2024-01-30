@@ -8,7 +8,7 @@ inquirer
     {
         type: 'list',
         message: 'Please select an option:',
-        choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role'],
+        choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add a Department', 'Add a Role', 'Add an Employee', 'Update an Employee Role', 'Exit'],
         name: 'database',
         validate: function listValidation(input) {
             if (input == '') {
