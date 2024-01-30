@@ -34,11 +34,15 @@ function dbReader(data) {
   } else if (option === "Add an Employee") {
     createEmployeeArray();
     createManagerArray();
-  } else {
+  } else if (option === "Update an Employee Role") {
     createEmployeeArray();
     createUpdateArray();
+  } else {
+    console.log('Goodbye!')
+    process.exit();
   }
 }
+
 
 function viewAllDepts() {
   db.query("SELECT * FROM departments", function (err, results) {
@@ -55,7 +59,17 @@ function viewAllRoles() {
 }
 
 function viewAllEmployees() {
-  db.query("SELECT * FROM employees", function (err, results) {
+  db.query(`SELECT 
+  employees.id AS id,
+  employees.first_name,
+  employees.last_name,
+  employees.role_id,
+  roles.salary,
+  departments.department_name,
+  employees.manager_id AS manager_id
+  FROM roles
+  INNER JOIN employees ON employees.id = roles.id
+  INNER JOIN departments ON roles.id = departments.id;`, function (err, results) {
     console.table(results);
     index.runDatabase();
   });
@@ -79,13 +93,13 @@ function addDepartment() {
     ])
     .then((data) => {
       let newDept = data.department;
-      console.log("new dept", newDept);
+      // console.log("new dept", newDept);
       db.query(
         "INSERT INTO departments (department_name) VALUES (?);",
         newDept,
         function (err, results) {
-          console.log(results);
-          index.runDatabase();
+          // console.log(results);
+          viewAllDepts();
         }
       );
     });
@@ -106,18 +120,18 @@ function createEmployeeArray() {
 
 function createManagerArray() {
   db.query(`SELECT id, CONCAT(first_name, " ", last_name) AS manager_name FROM employees;`, function (err, results) {
-    console.log(results);
+    // console.log(results);
     results.forEach((element) => managerArray.push({name: element.manager_name, value: element.id}));
-    console.log(managerArray);
+    // console.log(managerArray);
     addEmployee();
   });
 }
 
 function createUpdateArray() {
   db.query(`SELECT id, CONCAT(first_name, " ", last_name) AS manager_name FROM employees;`, function (err, results) {
-    console.log(results);
+    // console.log(results);
     results.forEach((element) => managerArray.push({name: element.manager_name, value: element.id}));
-    console.log(managerArray);
+    // console.log(managerArray);
     updateEmployee();
   });
 }
@@ -178,17 +192,17 @@ function addRole() {
           results.forEach((element) =>
             generalArray.push(Object.values(element))
           );
-          console.log("array", generalArray[0]);
+          // console.log("array", generalArray[0]);
           idArray.push(generalArray[0][0]);
-          console.log("id", idArray);
+          // console.log("id", idArray);
 
           console.log("Role Info: ", newRole, salary, idArray[0]);
           db.query(
             "INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?);",
             [newRole, salary, idArray[0]],
             function (err, results) {
-              console.log(results);
-              index.runDatabase();
+              // console.log(results);
+              viewAllRoles();
             }
           );
         }
@@ -267,27 +281,27 @@ function addEmployee() {
         "SELECT id FROM roles WHERE title = ?;",
         roles,
         function (err, results) {
-          console.log("Roles", results);
+          // console.log("Roles", results);
           results.forEach((element) =>
             generalArray.push(Object.values(element))
           );
-          console.log("R array", generalArray[0]);
+          // console.log("R array", generalArray[0]);
           rolesArray.push(generalArray[0][0]);
-          console.log("R id", rolesArray);
+          // console.log("R id", rolesArray);
 
-          console.log(
-            "confirmation: ",
-            firstName,
-            lastName,
-            rolesArray[0],
-            managersArray[0]
-          );
+          // console.log(
+          //   "confirmation: ",
+          //   firstName,
+          //   lastName,
+          //   rolesArray[0],
+          //   managersArray[0]
+          // );
           db.query(
             "INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);",
             [firstName, lastName, rolesArray[0], manager],
             function (err, results) {
-              console.log("final result", results);
-              index.runDatabase();
+              // console.log("final result", results);
+              viewAllEmployees()
             }
           );
         }
@@ -335,41 +349,41 @@ function updateEmployee() {
         let rolesArray = [];
         let managersArray = [];
   
-      console.log('Manager', manager);
+      // console.log('Manager', manager);
   
         db.query(
           "SELECT id FROM roles WHERE title = ?;",
           roles,
           function (err, results) {
-            console.log("Roles", results);
+            // console.log("Roles", results);
             results.forEach((element) =>
               generalArray.push(Object.values(element))
             );
-            console.log("R array", generalArray[0]);
+            // console.log("R array", generalArray[0]);
             rolesArray.push(generalArray[0][0]);
-            console.log("R id", rolesArray);
+            // console.log("R id", rolesArray);
              
             db.query(
               "SELECT id FROM employees WHERE ? = ?;",
               [rolesArray[0], manager[0]],
               function (err, results) {
                 console.log("final result", results);
-                index.runDatabase();
+                // index.runDatabase();
               }
             );
 
-            console.log(
-              "confirmation: ",
-              manager,
-              rolesArray[0],
-              // managersArray[0]
-            );
+            // console.log(
+            //   "confirmation: ",
+            //   manager,
+            //   rolesArray[0],
+            //   // managersArray[0]
+            // );
             db.query(
               "UPDATE employees SET role_id = ? WHERE id = ? ;",
               [rolesArray[0], manager],
               function (err, results) {
-                console.log("final result", results);
-                index.runDatabase();
+                // console.log("final result", results);
+                viewAllEmployees()
               }
             );
           }
